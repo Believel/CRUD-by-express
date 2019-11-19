@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./dist/bin/server.js",
+    "watch": "nodemon ./dist/bin/server.js",
+    "build-ts": "tsc",
+    "copy-static": "ts-node copyStatic.ts",
+    "build": "npm run build-ts && npm run copy-static"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -20,7 +24,9 @@
     "@types/http-errors": "^1.6.2",
     "@types/morgan": "^1.7.37",
     "@types/node": "^12.12.9",
+    "@types/shelljs": "^0.8.6",
     "nodemon": "^1.19.4",
+    "shelljs": "^0.8.3",
     "ts-node": "^8.5.2",
     "typescript": "^3.7.2"
   }
