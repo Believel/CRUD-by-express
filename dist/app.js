@@ -8,9 +8,15 @@ var express_1 = __importDefault(require("express"));
 var path_1 = __importDefault(require("path"));
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var morgan_1 = __importDefault(require("morgan"));
+var mongoose_1 = __importDefault(require("mongoose"));
+var config_1 = __importDefault(require("./config"));
 var index_1 = __importDefault(require("./routes/index"));
 var users_1 = __importDefault(require("./routes/users"));
 var app = express_1.default();
+mongoose_1.default.connect(config_1.default.connectionStr, {
+    useCreateIndex: true
+}, function () { return console.log('MongoDB 连接成功'); });
+mongoose_1.default.connection.on('error', console.error);
 // view engine setup
 app.set('views', path_1.default.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
