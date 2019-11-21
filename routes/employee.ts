@@ -1,17 +1,22 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 
 import levelController from '../controllers/level';
 import departmentController from '../controllers/department';
+import employeeController from '../controllers/employee';
 const router = express.Router();
-const urlencodedParser = bodyParser.urlencoded({
-  extended: false
-});
+
 
 // 级别
 router.get('/getLevel', levelController.find);
-router.post('/createLevel', urlencodedParser, levelController.create)
+router.post('/createLevel', levelController.create);
+
 // 部门
 router.get('/getDepartment', departmentController.find);
-router.post('/createDepartment', departmentController.create)
+router.post('/createDepartment', departmentController.create);
+
+// 员工
+router.get('/getEmployee', employeeController.find);
+router.post('/createEmployee', employeeController.create);
+router.delete('/deleteEmployee/:id', employeeController.checkEmployeeExist, employeeController.delete);
+router.patch('/updateEmployee/:id', employeeController.checkEmployeeExist, employeeController.update )
 export default router;

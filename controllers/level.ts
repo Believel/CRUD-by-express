@@ -3,7 +3,6 @@ import Level from '../models/level';
 class LevelController {
   // 创建级别
   async create(req:any, res:any) {
-    console.log(req.body);
     let level = await new Level({ ...req.body}).save();
     res.json({
       flag: 0,
