@@ -1,4 +1,6 @@
 import {EmployeeModel} from '../models/employee';
+import LevelModel from '../models/level';
+import DepartmentModel from '../models/department';
 interface Params {
   name?: string;
   departmentId?: string
@@ -61,9 +63,22 @@ class EmployeeController {
     let employee = await new EmployeeModel({
       ...req.body
     }).save();
+    let { departmentId, levelId} = req.body;
+    let department: any = await DepartmentModel.findById(departmentId);
+    let Level: any = await LevelModel.findById(levelId);
+    let {_id, name, hiredate} = employee
+    res.end;
     res.json({
       flag: 0,
-      data: employee,
+      data: {
+        _id,
+        name,
+        hiredate,
+        departmentId,
+        departmentName: department.name,
+        levelName: Level.name,
+        levelId
+      },
       msg: '创建成功'
     })
   }
