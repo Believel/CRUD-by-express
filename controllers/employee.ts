@@ -1,4 +1,4 @@
-import Employee from '../models/employee';
+import {EmployeeModel} from '../models/employee';
 interface Params {
   name?: string;
   departmentId?: string
@@ -7,16 +7,17 @@ class EmployeeController {
   // 查询所有部门(含分页)
   async find(req: any, res: any) {
     console.log(req.query)
-    let { pageSize = 10, pageIndex = 1, departmentId, name} = req.query;
-    let employeeList;
+    let { pageSize = 20, pageIndex = 1, departmentId, name} = req.query;
+    let employeeList, result: any[] = [];
     pageIndex = Math.max(pageIndex * 1, 1); // 请求页数
     pageSize = Math.max(pageSize * 1, 1); // 每页数量
     // limit 查询结果的最大条数
     // skip 指定跳过的文档条数
     if(!departmentId && !name) {
-      employeeList = await Employee.find()
+      employeeList = await EmployeeModel.find()
+        .populate('departmentId levelId')
         .limit(pageSize)
-        .skip((pageIndex - 1) * pageSize);
+        .skip((pageIndex - 1) * pageSize)
     } else {
       let params: Params = {};
       if (name) {
@@ -25,16 +26,28 @@ class EmployeeController {
       if (departmentId) {
         params.departmentId = departmentId
       }
-      employeeList = await Employee.find(params)
+      employeeList = await EmployeeModel.find(params)
+        .populate('departmentId levelId')
         .limit(pageSize)
         .skip((pageIndex - 1) * pageSize);
     }
-    
-    const total = await Employee.count({name, departmentId});
+    employeeList.forEach(function(item) {
+      let { _id, name} = item;
+      result.push({
+        _id,
+        name,
+        departmentId: item.departmentId._id,
+        deparmentName: item.departmentId.name,
+        levelId: item.levelId._id,
+        levelName: item.levelId.name
+      })
+    })
+    // const total = await EmployeeModel.count({});
+    const total = await EmployeeModel.countDocuments({})
     res.json({
       flag: 0,
       data: {
-        list: employeeList,
+        list: result,
         pageSize,
         pageIndex,
         total
@@ -43,7 +56,7 @@ class EmployeeController {
   }
   // 创建员工
   async create(req: any, res: any) {
-    let employee = await new Employee({
+    let employee = await new EmployeeModel({
       ...req.body
     }).save();
     res.json({
@@ -54,7 +67,7 @@ class EmployeeController {
   }
   // 删除员工
   async delete(req: any, res: any) {
-    const employee = await Employee.findByIdAndDelete(req.params.id);
+    const employee = await EmployeeModel.findByIdAndDelete(req.params.id);
     if (!employee) {
       res.json({
         flag: 1,
@@ -68,7 +81,7 @@ class EmployeeController {
   }
   // 检查员工是否存在
   async checkEmployeeExist(req: any, res: any, next: any) {
-    const employee = await Employee.findById(req.params.id).select('+name');
+    const employee = await EmployeeModel.findById(req.params.id).select('+name');
     if (!employee) {
       res.json({
         flag: 0,
