@@ -32,14 +32,16 @@ class EmployeeController {
         .skip((pageIndex - 1) * pageSize);
     }
     employeeList.forEach(function(item) {
-      let { _id, name} = item;
+      let { _id, name, hiredate} = item;
       result.push({
         _id,
         name,
+        hiredate,
         departmentId: item.departmentId._id,
-        deparmentName: item.departmentId.name,
+        departmentName: item.departmentId.name,
         levelId: item.levelId._id,
         levelName: item.levelId.name
+        
       })
     })
     // const total = await EmployeeModel.count({});
