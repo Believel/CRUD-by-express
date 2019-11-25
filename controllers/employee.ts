@@ -1,6 +1,17 @@
 import {EmployeeModel} from '../models/employee';
 import LevelModel from '../models/level';
 import DepartmentModel from '../models/department';
+import excelExport from 'excel-export';
+let conf: excelExport.Config = {
+  cols: [
+    { caption: '员工ID', type: 'string'},
+    { caption: '姓名', type: 'string'},
+    { caption: '部门', type: 'string'},
+    { caption: '入职时间', type: 'string'},
+    { caption: '职级', type: 'string'}
+  ],
+  rows: []
+}
 interface Params {
   name?: string;
   departmentId?: string
@@ -115,6 +126,17 @@ class EmployeeController {
       flag: 0,
       msg: '更新成功'
     })
+  }
+  // 下载表格
+  async download(req: any, res: any) {
+    let employeeList = await EmployeeModel.find().populate('departmentId levelId');
+    conf.rows = employeeList.map((v) => {
+      return [v._id, v.name, v.departmentId.name,v.hiredate, v.levelId.name]
+    });
+    let excel = excelExport.execute(conf);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats')
+    res.setHeader("Content-Disposition", "attachment; filename=" + "Employee.xlsx");
+  	res.end(excel, 'binary');
   }
 }
 export default new EmployeeController();

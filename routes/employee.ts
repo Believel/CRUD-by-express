@@ -19,4 +19,6 @@ router.get('/getEmployee', employeeController.find);
 router.post('/createEmployee', employeeController.create);
 router.delete('/deleteEmployee/:id', employeeController.checkEmployeeExist, employeeController.delete);
 router.patch('/updateEmployee/:id', employeeController.checkEmployeeExist, employeeController.update )
+
+router.get('/downloadEmployee', employeeController.download)
 export default router;
